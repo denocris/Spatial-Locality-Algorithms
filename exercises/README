@@ -1,0 +1,26 @@
+    Exercise       Argument                    figure             input file
+
+    exhpc_1     bit manipulation routines
+
+  exhpc_2       Morton order                  plkey_M.ps
+
+ exhpc_3        Hilbert key                   plkey_H.ps
+
+
+  exhpc_4         Quadtree                     pltree.ps        tree.dat
+
+  exhpc_5         KD -tree                     plkdtree.ps
+
+
+ 
+These  ancillary routines are used in some exercises:
+
+- sorti     : sort an integer array 
+- whenigt  : find elements of an array greater than 
+- selecti  : partition M(<=N) elements  of an array of size N . Cf. Numerical 
+             Recipes II ed. , Section 8.5
+
+The fortran version of these routines is available upon request 
+
+
+
