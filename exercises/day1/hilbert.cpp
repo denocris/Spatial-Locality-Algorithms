@@ -128,7 +128,7 @@ void make_hilbert_grid(struct Hilbert * hilb,
     }
   }
 
-  
+
   for(i = 0; i < 4; i++){ // Rotation and reflection in subq 0 and 3
 
 
@@ -161,7 +161,7 @@ void make_hilbert_grid(struct Hilbert * hilb,
 
   }
 
-  }
+}
 
   // for(j = 0; j < 4*n; j++) printf("%lg", xsub[j] );
   // printf("\n");
@@ -179,6 +179,7 @@ void make_hilbert_grid(struct Hilbert * hilb,
 
 
   make_hilbert_grid(hilb, xsubrr, ysubrr, 4*n);
+  //make_hilbert_grid(hilb, xsubr, ysubr, 4*n);
   //make_hilbert_grid(hilb, xsub, ysub, 4*n);
   delete [] xsub;
   delete [] xsubr;
@@ -200,7 +201,7 @@ int main(){
   xgrid = new double [4];
   ygrid = new double [4];
 
-  hilbert_lattice_init(&hcurve, 2, 16);
+  hilbert_lattice_init(&hcurve, 3, 16);
 
   printf("\n\thilbert curve lscan: %d\n\n", hcurve.recdepth);
   for(i = 0; i < 2; i++){
