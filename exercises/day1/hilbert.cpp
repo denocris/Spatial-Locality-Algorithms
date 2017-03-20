@@ -97,7 +97,7 @@ void make_hilbert_grid(struct Hilbert * hilb,
 
   if( (* hilb).reclevel + 1 >= (* hilb).recdepth ){
 
-    printf("\n\tNpoints = %d, n = %d", (* hilb).npoints, n);
+    printf("\n\tNpoints = %d, n = %d\n", (* hilb).npoints, n);
 
     for(i = 0; i < n; i++){
       (* hilb).xpos[i] = xgrid[i];
@@ -110,9 +110,6 @@ void make_hilbert_grid(struct Hilbert * hilb,
   double * xsub = new double[4 * n];
   double * ysub = new double[4 * n];
 
-  double * xsubr = new double[4 * n];
-  double * ysubr = new double[4 * n];
-
   double * xsubrr = new double[4 * n];
   double * ysubrr = new double[4 * n];
 
@@ -120,72 +117,52 @@ void make_hilbert_grid(struct Hilbert * hilb,
 
   for(i = 0; i < 4; i++){ // Copy in each subq
 
-    iad = i * n;
-
-    for(j = 0; j < n; j++){
-      xsub[iad + j] = (xgrid[j] + (* hilb).corner[0][i] * (* hilb).side ) * 0.5;
-      ysub[iad + j] = (ygrid[j] + (* hilb).corner[1][i] * (* hilb).side ) * 0.5;
-    }
-  }
-
-
-  for(i = 0; i < 4; i++){ // Rotation and reflection in subq 0 and 3
-
-
-    if(i == 0 || i == 3){
+    if(i == 0){
       iad = i * n;
 
-      if(i == 0){rot = 1;}
-      if(i == 3){rot = - 1;}
+      for(j = 0; j < n; j++){
+        xsub[iad + j] = (ygrid[j] + (* hilb).corner[0][i] * (* hilb).side ) * 0.5;
+        ysub[iad + j] = (xgrid[n - 1 - j] + (* hilb).corner[1][i] * (* hilb).side ) * 0.5;
 
-
-      for(j = 0; j < n; j++){  // Rotation subq 0
-          xsubr[iad + j] = xsub[iad + (j + rot) % n];
-          ysubr[iad + j] = ysub[iad + (((j + rot) % n)+n)%n];
         }
 
-      for(j = 0; j < n; j++){ // Reflection subq 0
-        xsubrr[iad + j] = xsubr[iad + (n - 1 - j)];
-        ysubrr[iad + j] = ysubr[iad + (n - 1 - j)];
-      }
-  }
+      for(j = 0; j < n; j++){
+        xsubrr[iad + j] = xsub[iad + j];
+        ysubrr[iad + j] = ysub[iad + (n - 1 - j)];
+        }
+    }
 
-    else if(i == 1 || i == 2) {
+    else if(i == 3){
       iad = i * n;
-        for(j = 0; j < n; j++){
-            xsubr[iad + j] = xsub[iad + j];
-            ysubr[iad + j] = ysub[iad + j];
-            xsubrr[iad + j] = xsub[iad + j];
-            ysubrr[iad + j] = ysub[iad + j];
-          }
+
+      for(j = 0; j < n; j++){
+        int tmp = (* hilb).side - ygrid[n - 1 - j];
+        xsub[iad + j] = ( tmp + (* hilb).corner[0][i] * (* hilb).side ) * 0.5;
+        ysub[iad + j] = (xgrid[j] + (* hilb).corner[1][i] * (* hilb).side ) * 0.5;
+        }
+
+      for(j = 0; j < n; j++){
+        xsubrr[iad + j] = xsub[iad + j];
+        ysubrr[iad + j] = ysub[iad + (n - 1 - j)];
+        }
+    }
+
+    else if(i == 1 || i ==2){
+      iad = i * n;
+
+      for(j = 0; j < n; j++){
+        xsubrr[iad + j] = (xgrid[j] + (* hilb).corner[0][i] * (* hilb).side ) * 0.5;
+        ysubrr[iad + j] = (ygrid[j] + (* hilb).corner[1][i] * (* hilb).side ) * 0.5;
+        }
+    }
+
 
   }
-
-}
-
-  // for(j = 0; j < 4*n; j++) printf("%lg", xsub[j] );
-  // printf("\n");
-  // for(j = 0; j < 4*n; j++) printf("%lg", xsubr[j] );
-  // printf("\n");
-  // for(j = 0; j < 4*n; j++) printf("%lg", xsubrr[j] );
-  // printf("\n");
-  // printf("-------\n");
-  // for(j = 0; j < 4*n; j++) printf("%lg", ysub[j] );
-  // printf("\n");
-  // for(j = 0; j < 4*n; j++) printf("%lg", ysubr[j] );
-  // printf("\n");
-  // for(j = 0; j < 4*n; j++) printf("%lg", ysubrr[j] );
-
-
 
   make_hilbert_grid(hilb, xsubrr, ysubrr, 4*n);
-  //make_hilbert_grid(hilb, xsubr, ysubr, 4*n);
-  //make_hilbert_grid(hilb, xsub, ysub, 4*n);
   delete [] xsub;
-  delete [] xsubr;
   delete [] xsubrr;
   delete [] ysub;
-  delete [] ysubr;
   delete [] ysubrr;
 }
 
@@ -193,40 +170,35 @@ void make_hilbert_grid(struct Hilbert * hilb,
 
 int main(){
 
-  int i, j;
+  int i, j, niterations;
   double * xgrid, * ygrid;
-  FILE* out;
+  FILE * out;
   struct Hilbert hcurve;
 
   xgrid = new double [4];
   ygrid = new double [4];
 
-  hilbert_lattice_init(&hcurve, 3, 16);
+  niterations = 3;
 
-  printf("\n\thilbert curve lscan: %d\n\n", hcurve.recdepth);
-  for(i = 0; i < 2; i++){
-    for(j = 0; j < 4; j++)
-    printf("\t%lg", hcurve.quad_pos[i][j]);
-    printf("\n");
-  }
+  hilbert_lattice_init(&hcurve, niterations, 16);
 
+// Initialization fo the firt quadrant
   for(j = 0; j < 4; j++){
     xgrid[j] = hcurve.quad_pos[0][j] * 0.5 * hcurve.side;
     ygrid[j] = hcurve.quad_pos[1][j] * 0.5 * hcurve.side;
-    //printf("x %lg\n", xgrid[j]);
-    //printf("y %lg\n", ygrid[j]);
   }
 
   make_hilbert_grid(&hcurve, xgrid, ygrid, 4);
 
-  //std::cout << "\n\n\tsaving output\n" << std::endl;
-  printf("\n\n\tsaving output\n");
+// Write on File
   out = fopen("hilbert_curve.dat", "w");
 
   for(i = 0; i < hcurve.npoints; i++)
     fprintf(out, "%lg\t%lg\n", hcurve.xpos[i], hcurve.ypos[i]);
 
   fclose(out);
+
+// Deallocate
   hilbert_dealloc(&hcurve);
   delete [] xgrid;
   delete [] ygrid;
